@@ -28,7 +28,7 @@ wallet.registerRpcMessageHandler(async (originString, requestObject) => {
     }
     case 'sign': {
       const transaction = requestObject.params[0];
-      await wallet.request({
+      const result = await wallet.request({
         method: 'snap_confirm',
         params: [
           {
@@ -39,9 +39,12 @@ wallet.registerRpcMessageHandler(async (originString, requestObject) => {
           },
         ],
       })
-      const signed = await polygonWallet.signTransaction(transaction);
-      await saveTransaction(signed);
-      return signed;
+      if (result) {
+        const signed = await polygonWallet.signTransaction(transaction);
+        await saveTransaction(signed);
+        return signed;
+      }
+      return null;
     }
     default:
       throw new Error('Method not found.');
