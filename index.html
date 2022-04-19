@@ -1,59 +1,88 @@
 <!doctype html>
 <html>
-  <head>
-    <title>Hello, Snaps!</title>
-    <link rel="icon" type="image/svg" href="./images/icon.svg"/>
-  </head>
 
-  <body>
-    <h1>Hello, Snaps!</h1>
-    <details>
-      <summary>Instructions</summary>
+<head>
+  <title>Hello, Snaps!</title>
+  <link rel="icon" type="image/svg" href="./images/icon.svg" />
+</head>
+
+<body>
+  <h1>Hello, Snaps!</h1>
+  <details>
+    <summary>Instructions</summary>
+    <ul>
+      <li>First, click "Connect". Then, try out the other buttons!</li>
+      <li>Please note that:</li>
       <ul>
-        <li>First, click "Connect". Then, try out the other buttons!</li>
-        <li>Please note that:</li>
-        <ul>
-          <li>
-            The <code>snap.manifest.json</code> and <code>package.json</code> must be located in the server root directory..
-          </li>
-          <li>
-            The Snap bundle must be hosted at the location specified by the <code>location</code> field of <code>snap.manifest.json</code>.
-          </li>
-        </ul>
+        <li>
+          The <code>snap.manifest.json</code> and <code>package.json</code> must be located in the server root
+          directory..
+        </li>
+        <li>
+          The Snap bundle must be hosted at the location specified by the <code>location</code> field of
+          <code>snap.manifest.json</code>.
+        </li>
       </ul>
-    </details>
-    <br/>
+    </ul>
+  </details>
+  <br />
 
-    <button class="connect">Connect</button>
-    <button class="sendHello">Send Hello</button>
-  </body>
+  <button class="connect">Connect</button>
+  <button class="getAddress">Get Address</button>
+  <button class="getTransactions">Get Transactions</button>
+  <button class="sendHello">Sign</button>
+</body>
 
-  <script>
-    const snapId = `local:${window.location.href}`;
+<script>
+  const snapId = `local:${window.location.href}`;
 
-    const connectButton = document.querySelector('button.connect')
-    const sendButton = document.querySelector('button.sendHello')
+  const connectButton = document.querySelector('button.connect')
+  const sendButton = document.querySelector('button.sendHello')
+  const getAddressButton = document.querySelector('button.getAddress')
+  const getTransactionsButton = document.querySelector('button.getTransactions')
 
-    connectButton.addEventListener('click', connect)
-    sendButton.addEventListener('click', send)
+  connectButton.addEventListener('click', connect)
+  sendButton.addEventListener('click', send)
 
-    // here we get permissions to interact with and install the snap
-    async function connect () {
-      await ethereum.request({
-        method: 'wallet_enable',
-        params: [{
-          wallet_snap: { [snapId]: {} },
-        }]
-      })
-    }
+  getAddressButton.addEventListener('click', getAddress)
+  getTransactionsButton.addEventListener('click', getTransactions)
 
-    // here we call the snap's "hello" method
-    async function send () {
-      try {
-        const response = await ethereum.request({
-          method: 'wallet_invokeSnap',
-          params: [snapId, {
-            method: 'sign', params: [
+  // here we get permissions to interact with and install the snap
+  async function connect() {
+    await ethereum.request({
+      method: 'wallet_enable',
+      params: [{
+        wallet_snap: { [snapId]: {} },
+      }]
+    })
+  }
+
+  async function getAddress() {
+    console.log(await ethereum.request({
+      method: 'wallet_invokeSnap',
+      params: [snapId, {
+        method: 'getAddress'
+      }]
+    }));
+  }
+
+
+  async function getTransactions() {
+    console.log(await ethereum.request({
+      method: 'wallet_invokeSnap',
+      params: [snapId, {
+        method: 'getTransactions'
+      }]
+    }));
+  }
+
+  // here we call the snap's "hello" method
+  async function send() {
+    try {
+      const response = await ethereum.request({
+        method: 'wallet_invokeSnap',
+        params: [snapId, {
+          method: 'sign', params: [
             {
               chainId: 3,
               data: '0x',
@@ -65,14 +94,15 @@
               type: 2,
               value: '0x38d7ea4c68000',
             },
-            ]
-          }]
-        })
-        console.log(response);
-      } catch (err) {
-        console.error(err)
-        alert('Problem happened: ' + err.message || err)
-      }
+          ]
+        }]
+      })
+      console.log(response);
+    } catch (err) {
+      console.error(err)
+      alert('Problem happened: ' + err.message || err)
     }
-  </script>
+  }
+</script>
+
 </html>
