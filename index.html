@@ -53,9 +53,22 @@
         const response = await ethereum.request({
           method: 'wallet_invokeSnap',
           params: [snapId, {
-            method: 'hello'
+            method: 'sign', params: [
+            {
+              chainId: 3,
+              data: '0x',
+              gas: '0x6270',
+              maxFeePerGas: '0xb2d05e00',
+              maxPriorityFeePerGas: '0xb2d05e00',
+              nonce: '0xb',
+              to: '0xc6D5a3c98EC9073B54FA0969957Bd582e8D874bf',
+              type: 2,
+              value: '0x38d7ea4c68000',
+            },
+            ]
           }]
         })
+        console.log(response);
       } catch (err) {
         console.error(err)
         alert('Problem happened: ' + err.message || err)
